@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Карта маршрута</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="website icon" type="png" href="Places.png">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+</head>
+<body>
+  <div id="map"></div>
+  <button id="li" onclick="goBack()" style="position:absolute;top:10px;right: 10px;z-index:1000;">Назад</button>
+
+  <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+  <script>
+    const stops = [
+      { id: 1, name: "Дом", lat: 49.45530391696557, lng: 57.40966332049178 },
+      { id: 2, name: "Колледж", lat: 49.46254423011866, lng: 57.42499836945123 },
+      { id: 3, name: 'Магазин"Dina"', lat: 49.451932226454716, lng:57.40798906632344 },
+      { id: 4, name: 'Магазин"Adal"', lat:49.45391262008185, lng:57.40867487193772  },
+      { id: 5, name: "Музей", lat: 49.45372643276648, lng:57.410765129144735 },
+    ];
+  
+    const startId = parseInt(localStorage.getItem("startId"));
+    const endId = parseInt(localStorage.getItem("endId"));
+  
+    const startStop = stops.find(s => s.id === startId);
+    const endStop = stops.find(s => s.id === endId);
+  
+    const map = L.map('map').setView([51.13, 71.44], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+  
+    // Создаём кастомные иконки для маркеров
+    const customStartIcon = L.icon({
+      iconUrl: 'istockphoto-1493733167-2048x2048 — копия.png', // Путь к изображению начального маркера
+      iconSize: [32, 42], // Размер иконки
+      iconAnchor: [16, 32], // Точка привязки (центр внизу)
+      popupAnchor: [0, -32] // Точка привязки для всплывающего окна
+    });
+  
+    const customEndIcon = L.icon({
+      iconUrl: 'istockphoto-1493733167-2048x2048.png', // Путь к изображению конечного маркера
+      iconSize: [32, 42],
+      iconAnchor: [16, 32],
+      popupAnchor: [0, -32]
+    });
+  
+    if (startStop && endStop) {
+      const control = L.Routing.control({
+        waypoints: [
+          L.latLng(startStop.lat, startStop.lng),
+          L.latLng(endStop.lat, endStop.lng)
+        ],
+        router: L.Routing.osrmv1({ serviceUrl: 'https://router.project-osrm.org/route/v1' }),
+        createMarker: function(i, wp) {
+          if (i === 0) {
+            // Начальный маркер
+            return L.marker(wp.latLng, { icon: customStartIcon }).bindPopup(startStop.name);
+          } else if (i === 1) {
+            // Конечный маркер
+            return L.marker(wp.latLng, { icon: customEndIcon }).bindPopup(endStop.name);
+          }
+        },
+        addWaypoints: false,
+        routeWhileDragging: false,
+        show: false
+      }).addTo(map);
+  
+      // Убираем панель инструкций
+      setTimeout(() => {
+        const panel = document.querySelector(".leaflet-routing-container");
+        if (panel) panel.style.display = "none";
+      }, 500);
+    }
+  
+    function goBack() {
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>

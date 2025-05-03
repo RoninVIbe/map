@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Выбор маршрута</title>
+  <link rel="website icon" type="png" href="Places.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Выберите маршрут</h1>
+
+    <label for="start">Начальная точка</label>
+    <select id="start"></select>
+
+    <label for="end">Конечная точка</label>
+    <select id="end"></select>
+
+    <button onclick="saveSelection()">Показать маршрут</button>
+  </div>
+
+  <script>
+    const stops = [
+      { id: 1, name: "Дом" },
+      { id: 2, name: "Колледж" },
+      { id: 3, name: 'Магазин"Dina"' },
+      { id: 4, name: 'Магазин"Adal"' },
+      { id: 5, name: "Музей" }
+    ];
+
+    const startSelect = document.getElementById("start");
+    const endSelect = document.getElementById("end");
+
+    stops.forEach(stop => {
+      startSelect.add(new Option(stop.name, stop.id));
+      endSelect.add(new Option(stop.name, stop.id));
+    });
+
+    function saveSelection() {
+      const start = startSelect.value;
+      const end = endSelect.value;
+      if (start === end) {
+        alert("Начальная и конечная точка совпадают!");
+        return;
+      }
+
+      localStorage.setItem("startId", start);
+      localStorage.setItem("endId", end);
+      window.location.href = "map.html";
+    }
+  </script>
+</body>
+</html>
